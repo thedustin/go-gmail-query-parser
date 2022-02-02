@@ -16,7 +16,7 @@ type testcase struct {
 	Result token.List
 }
 
-func TestParser(t *testing.T) {
+func TestLexer(t *testing.T) {
 	ts := []testcase{
 		{
 			Name: "Empty Query",

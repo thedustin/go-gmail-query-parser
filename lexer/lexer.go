@@ -29,7 +29,7 @@ var knownFields = map[string]bool{
 	"newer":       true,
 	"older_than":  true,
 	"older":       true,
-	"Rfc822msgid": true,
+	"rfc822msgid": true,
 	"size":        true,
 	"smaller":     true,
 	"subject":     true,
@@ -67,6 +67,7 @@ func (l *Lexer) Reset() {
 	l.group = 0
 }
 
+// Parse transforms the given query into a list of tokens
 func (l *Lexer) Parse(query string) error {
 	l.Reset()
 	l.source = query
@@ -178,6 +179,7 @@ func (l *Lexer) processToken(t string) error {
 	return fmt.Errorf("unknown state step %q for token: %q", l.lastToken, t)
 }
 
+// pop returns the next token, removes all following whitespace, and increases the index.
 func (l *Lexer) pop() string {
 	peeked, i := l.peek()
 
@@ -187,12 +189,14 @@ func (l *Lexer) pop() string {
 	return peeked
 }
 
+// popWhitespace skips all following whitespace/space
 func (l *Lexer) popWhitespace() {
 	for ; l.i < len(l.source) && l.source[l.i] == ' '; l.i++ {
 		// do nothing, we skip all whitespace token by incrementing everything in the for-head
 	}
 }
 
+// peek returns the next token and it length, without modifing the index
 func (l *Lexer) peek() (string, int) {
 	if l.i >= len(l.source) {
 		return "", 0
