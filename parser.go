@@ -1,27 +1,39 @@
 package parser
 
-import "github.com/thedustin/go-gmail-query-parser/lexer"
+import (
+	"github.com/thedustin/go-gmail-query-parser/criteria"
+	"github.com/thedustin/go-gmail-query-parser/lexer"
+	"github.com/thedustin/go-gmail-query-parser/translator"
+)
 
 type Parser struct {
-	lexer *lexer.Lexer
+	lexer      *lexer.Lexer
+	translator *translator.Translator
 }
 
 func NewParser() *Parser {
 	return &Parser{
-		&lexer.Lexer{},
+		lexer:      &lexer.Lexer{},
+		translator: &translator.Translator{},
 	}
 }
 
-func (p *Parser) Parse(query string) error {
+func (p *Parser) Parse(query string) (criteria.Criteria, error) {
 	if err := p.lexer.Parse(query); err != nil {
-		return err
+		return nil, err
 	}
 
 	tokens := p.lexer.Result()
 
 	if err := tokens.Validate(); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	crit, err := p.translator.ParseTree(tokens)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return crit, nil
 }
