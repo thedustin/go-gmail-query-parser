@@ -1,6 +1,8 @@
 package criteria
 
-import "strings"
+import (
+	"strings"
+)
 
 type criteriaOr struct {
 	parent    InnerCriteria

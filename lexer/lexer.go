@@ -52,7 +52,7 @@ func NewLexer() *Lexer {
 	return l
 }
 
-func (l *Lexer) Result() token.List {
+func (l Lexer) Result() token.List {
 	return l.result
 }
 
@@ -197,7 +197,7 @@ func (l *Lexer) popWhitespace() {
 }
 
 // peek returns the next token and it length, without modifing the index
-func (l *Lexer) peek() (string, int) {
+func (l Lexer) peek() (string, int) {
 	if l.i >= len(l.source) {
 		return "", 0
 	}
@@ -228,7 +228,7 @@ func (l *Lexer) peek() (string, int) {
 	return t, len(t)
 }
 
-func (l *Lexer) valueBoundaries() []byte {
+func (l Lexer) valueBoundaries() []byte {
 	if l.group > 0 {
 		return []byte{' ', ')'}
 	}
@@ -238,20 +238,20 @@ func (l *Lexer) valueBoundaries() []byte {
 
 // lookupNext searches for the next occurence of b byte and returns all content (including the b byte), and the length of the content.
 // The length will be zero if the b byte was not found.
-func (l *Lexer) lookupNext(bs []byte) (string, int) {
+func (l Lexer) lookupNext(chars []byte) (string, int) {
 	i := l.i
 
 	for ; i < len(l.source); i++ {
-		for _, b := range bs {
-			if l.source[i] == b {
+		for _, b := range chars {
+			if l.source[i] == b && l.source[i-1] != token.EscapeChar {
 				t := l.source[l.i:(i + 1)]
 
-				return t, len(t)
+				return token.Unescape(t), len(t)
 			}
 		}
 	}
 
-	return l.source[l.i:i], 0
+	return token.Unescape(l.source[l.i:i]), 0
 }
 
 func min(a, b int) int {

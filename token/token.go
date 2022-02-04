@@ -1,7 +1,5 @@
 package token
 
-import "strings"
-
 type kind string
 
 const (
@@ -66,7 +64,7 @@ func (t *Token) Value() string {
 func (t *Token) queryString() string {
 	v := t.value
 
-	if t.kind == FieldValue && strings.Contains(v, " ") {
+	if t.kind == FieldValue && ContainsSpecialChars(t.value) {
 		v = "(" + t.value + ")"
 	}
 
