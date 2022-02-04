@@ -1,0 +1,3 @@
+- [ ] Optimize created criteria list (e.g. combine multiple criteriaOr, remove empty groups,...)
+- [ ] Allow escaping of special characters in query
+- [ ] Use quotes for values?

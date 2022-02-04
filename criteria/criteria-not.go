@@ -1,15 +1,28 @@
 package criteria
 
 type criteriaNot struct {
-	criteria Criteria
+	parent   InnerCriteria
+	criteria InnerCriteria
 }
 
-func (c criteriaNot) Matches(vals []string) bool {
-	return !c.criteria.Matches(vals)
-}
-
-func NewNot(criteria Criteria) criteriaNot {
-	return criteriaNot{
+func NewNot(criteria InnerCriteria) *criteriaNot {
+	return &criteriaNot{
 		criteria: criteria,
 	}
+}
+
+func (c criteriaNot) Matches(v interface{}) bool {
+	return !c.criteria.Matches(v)
+}
+
+func (c criteriaNot) Parent() InnerCriteria {
+	return c.parent
+}
+
+func (c *criteriaNot) SetParent(p InnerCriteria) {
+	c.parent = p
+}
+
+func (c criteriaNot) String() string {
+	return "!(" + c.criteria.String() + ")"
 }

@@ -3,18 +3,28 @@ package parser
 import (
 	"github.com/thedustin/go-gmail-query-parser/criteria"
 	"github.com/thedustin/go-gmail-query-parser/lexer"
-	"github.com/thedustin/go-gmail-query-parser/translator"
 )
 
 type Parser struct {
 	lexer      *lexer.Lexer
-	translator *translator.Translator
+	translator *criteria.Translator
+
+	flags Flag
 }
 
-func NewParser() *Parser {
+type Flag int
+
+const (
+	FlagOptimize Flag = 1 << iota
+
+	FlagDefault = FlagOptimize
+)
+
+func NewParser(valFunc criteria.ValueTransformer, flags Flag) *Parser {
 	return &Parser{
 		lexer:      &lexer.Lexer{},
-		translator: &translator.Translator{},
+		translator: criteria.NewTranslator(valFunc).WithOptimizations(flags&FlagOptimize > 0),
+		flags:      flags,
 	}
 }
 

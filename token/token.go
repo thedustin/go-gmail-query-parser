@@ -40,7 +40,7 @@ var validationMap = map[kind][]kind{
 	Negate: {GroupStart, Field, Fulltext},
 	Or:     {Field, Fulltext, Negate, GroupStart},
 
-	GroupStart: {Field, Fulltext, Negate},
+	GroupStart: {Field, Fulltext, Negate, GroupStart},
 }
 
 // Token is a simple struct containing information about the token type (kind), and the string value of this token.

@@ -59,7 +59,7 @@ func TestListValidation(t *testing.T) {
 
 	for _, tc := range ts {
 		t.Run(tc.Name, func(t *testing.T) {
-			err := tc.List.Valid()
+			err := tc.List.Validate()
 
 			if tc.Err != nil && err == nil {
 				t.Errorf("Error should have been %v", tc.Err)
