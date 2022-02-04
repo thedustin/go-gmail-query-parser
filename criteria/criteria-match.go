@@ -48,8 +48,8 @@ func (c criteriaMatch) Matches(v interface{}) bool {
 
 func (c criteriaMatch) String() string {
 	if c.field == FieldFulltext {
-		return c.substr
+		return fmt.Sprintf("CONTAINS \"%s\"", c.substr)
 	}
 
-	return fmt.Sprintf("%s == (%s)", c.field, c.substr)
+	return fmt.Sprintf("%s == \"%s\"", c.field, c.substr)
 }

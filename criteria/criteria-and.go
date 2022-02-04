@@ -83,5 +83,5 @@ func (c criteriaAnd) String() string {
 		crits[i] = c.criterias[i].String()
 	}
 
-	return "(" + strings.Join(crits, " ") + ")"
+	return "(" + strings.Join(crits, " AND ") + ")"
 }

@@ -134,6 +134,10 @@ func (t *Translator) criteriaFromToken(tok token.Token) (InnerCriteria, error) {
 		t.lastCriteria = group
 
 		for nextTok := t.pop(); nextTok != nil; nextTok = t.pop() {
+			if nextTok.Kind() == token.GroupEnd {
+				break
+			}
+
 			crit, err := t.criteriaFromToken(*nextTok)
 
 			if err != nil {

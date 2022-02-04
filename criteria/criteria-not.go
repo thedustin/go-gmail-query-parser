@@ -24,5 +24,5 @@ func (c *criteriaNot) SetParent(p InnerCriteria) {
 }
 
 func (c criteriaNot) String() string {
-	return "!(" + c.criteria.String() + ")"
+	return "NOT " + c.criteria.String() + ""
 }
