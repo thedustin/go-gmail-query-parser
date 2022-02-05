@@ -1,6 +1,7 @@
 package criteria
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -19,6 +20,8 @@ const FieldFulltext string = "--(--fulltext--)--"
 
 // FieldDefault is a special field name used to set the default match constructor
 const FieldDefault string = "--(--default--)--"
+
+var ErrCriteriaConstructorFailed = errors.New("criteria constructor error")
 
 func NewMatch(field, substr string, valFunc ValueTransformer) *criteriaMatch {
 	return &criteriaMatch{

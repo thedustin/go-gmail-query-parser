@@ -30,8 +30,8 @@ var ErrCriteriaNotInGroup = errors.New("criteria not in group")
 
 type ValueTransformer func(field string, v interface{}) []string
 
-type CriteriaMatchConstructor func(field, substr string, valFunc ValueTransformer) InnerCriteria
+type CriteriaMatchConstructor func(field, substr string, valFunc ValueTransformer) (InnerCriteria, error)
 
-var DefaultCriteriaMatchConstructor = CriteriaMatchConstructor(func(field, substr string, valFunc ValueTransformer) InnerCriteria {
-	return NewMatch(field, substr, valFunc)
+var DefaultCriteriaMatchConstructor = CriteriaMatchConstructor(func(field, substr string, valFunc ValueTransformer) (InnerCriteria, error) {
+	return NewMatch(field, substr, valFunc), nil
 })

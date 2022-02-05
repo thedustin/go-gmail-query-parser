@@ -171,7 +171,12 @@ func (t *Translator) criteriaFromToken(tok token.Token) (InnerCriteria, error) {
 		return group, nil
 	case token.Fulltext:
 		// @todo: get criteria creator for token + irgendwie den Feldnamen übergeben und nen ValueTransformer...
-		match := t.matchConstructor(FieldFulltext)(FieldFulltext, tok.Value(), t.valFunc)
+		match, err := t.matchConstructor(FieldFulltext)(FieldFulltext, tok.Value(), t.valFunc)
+
+		if err != nil {
+			return nil, err
+		}
+
 		match.SetParent(t.lastCriteria.Parent())
 		t.lastCriteria = match
 
@@ -198,7 +203,12 @@ func (t *Translator) criteriaFromToken(tok token.Token) (InnerCriteria, error) {
 		}
 
 		// @todo: get criteria creator for token + irgendwie den Feldnamen übergeben und nen ValueTransformer...
-		match := t.matchConstructor(tok.Value())(tok.Value(), valTok.Value(), t.valFunc)
+		match, err := t.matchConstructor(tok.Value())(tok.Value(), valTok.Value(), t.valFunc)
+
+		if err != nil {
+			return nil, err
+		}
+
 		match.SetParent(t.lastCriteria.Parent())
 		t.lastCriteria = match
 
