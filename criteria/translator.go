@@ -3,6 +3,7 @@ package criteria
 import (
 	"fmt"
 
+	"github.com/thedustin/go-gmail-query-parser/lexer"
 	"github.com/thedustin/go-gmail-query-parser/token"
 )
 
@@ -10,7 +11,7 @@ var ErrUnknownToken = fmt.Errorf("unknown token")
 var ErrUnexpectedListEnd = fmt.Errorf("unexpected list end")
 var ErrUnexpectedToken = fmt.Errorf("unexpected token")
 
-type ValueTransformer func(field string, v interface{}) []string
+type constructorMap map[string]CriteriaMatchConstructor
 
 type Translator struct {
 	i      int
@@ -20,19 +21,36 @@ type Translator struct {
 
 	lastCriteria InnerCriteria
 
-	valFunc ValueTransformer
+	valFunc      ValueTransformer
+	constructors constructorMap
 }
 
 func NewTranslator(valFunc ValueTransformer) *Translator {
-	return &Translator{
+	t := &Translator{
 		valFunc: valFunc,
 	}
+
+	t.constructors = make(constructorMap)
+	t.constructors[FieldDefault] = DefaultCriteriaMatchConstructor
+
+	t.constructors[lexer.FieldNewerThan] = NewerThanMatchConstructor
+	t.constructors[lexer.FieldOlderThan] = OlderThanMatchConstructor
+
+	return t
 }
 
 func (t *Translator) WithOptimizations(enabled bool) *Translator {
 	t.optimize = enabled
 
 	return t
+}
+
+func (t *Translator) SetMatchConstructor(field string, constructor CriteriaMatchConstructor) {
+	if constructor == nil {
+		constructor = DefaultCriteriaMatchConstructor
+	}
+
+	t.constructors[field] = constructor
 }
 
 func (t *Translator) Reset() {
@@ -153,7 +171,7 @@ func (t *Translator) criteriaFromToken(tok token.Token) (InnerCriteria, error) {
 		return group, nil
 	case token.Fulltext:
 		// @todo: get criteria creator for token + irgendwie den Feldnamen übergeben und nen ValueTransformer...
-		match := NewMatch(FieldFulltext, tok.Value(), t.valFunc)
+		match := t.matchConstructor(FieldFulltext)(FieldFulltext, tok.Value(), t.valFunc)
 		match.SetParent(t.lastCriteria.Parent())
 		t.lastCriteria = match
 
@@ -180,7 +198,7 @@ func (t *Translator) criteriaFromToken(tok token.Token) (InnerCriteria, error) {
 		}
 
 		// @todo: get criteria creator for token + irgendwie den Feldnamen übergeben und nen ValueTransformer...
-		match := NewMatch(tok.Value(), valTok.Value(), t.valFunc)
+		match := t.matchConstructor(tok.Value())(tok.Value(), valTok.Value(), t.valFunc)
 		match.SetParent(t.lastCriteria.Parent())
 		t.lastCriteria = match
 
@@ -261,4 +279,12 @@ func isSameGroup(a, b InnerCriteria) bool {
 	}
 
 	return false
+}
+
+func (t Translator) matchConstructor(field string) CriteriaMatchConstructor {
+	if constructor, ok := t.constructors[field]; ok {
+		return constructor
+	}
+
+	return t.constructors[FieldDefault]
 }

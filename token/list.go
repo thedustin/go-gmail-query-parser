@@ -44,7 +44,7 @@ func (tl List) Validate() error {
 			next = &tl[i+1]
 		}
 
-		if err := t.isValid(next); err != nil {
+		if err := t.Validate(next); err != nil {
 			return err
 		}
 	}

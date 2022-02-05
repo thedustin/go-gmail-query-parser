@@ -81,8 +81,8 @@ func (t *Token) isTrailingSpaceToken() bool {
 	return ok
 }
 
-// isValid checks whether the token is valid in relation if its descendant
-func (t Token) isValid(next *Token) error {
+// Validate checks whether the token is valid in relation if its descendant
+func (t Token) Validate(next *Token) error {
 	if t.kind == End && next == nil {
 		return nil
 	}

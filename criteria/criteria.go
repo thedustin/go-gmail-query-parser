@@ -27,3 +27,11 @@ type GroupCriteria interface {
 
 var ErrCriteriaAlreadyInGroup = errors.New("criteria already in group")
 var ErrCriteriaNotInGroup = errors.New("criteria not in group")
+
+type ValueTransformer func(field string, v interface{}) []string
+
+type CriteriaMatchConstructor func(field, substr string, valFunc ValueTransformer) InnerCriteria
+
+var DefaultCriteriaMatchConstructor = CriteriaMatchConstructor(func(field, substr string, valFunc ValueTransformer) InnerCriteria {
+	return NewMatch(field, substr, valFunc)
+})

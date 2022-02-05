@@ -10,35 +10,11 @@ import (
 // See https://marianogappa.github.io/software/2019/06/05/lets-build-a-sql-parser-in-go/
 // See https://www.youtube.com/watch?v=HxaD_trXwRE
 
-var knownFields = map[string]bool{
-	"after":       true,
-	"bcc":         true,
-	"before":      true,
-	"category":    true,
-	"cc":          true,
-	"deliveredto": true,
-	"filename":    true,
-	"from":        true,
-	"has":         true,
-	"in":          true,
-	"is":          true,
-	"label":       true,
-	"larger":      true,
-	"list":        true,
-	"newer_than":  true,
-	"newer":       true,
-	"older_than":  true,
-	"older":       true,
-	"rfc822msgid": true,
-	"size":        true,
-	"smaller":     true,
-	"subject":     true,
-	"to":          true,
-}
-
 type Lexer struct {
 	source string
 	result token.List
+
+	fields fieldMap
 
 	lastToken token.Token
 
@@ -48,6 +24,9 @@ type Lexer struct {
 
 func NewLexer() *Lexer {
 	l := &Lexer{}
+
+	// @todo: Copy instead of Ref
+	l.fields = defaultFields
 
 	return l
 }
@@ -124,7 +103,7 @@ func (l *Lexer) processToken(t string) error {
 
 		return nil
 	default:
-		if _, ok := knownFields[t]; ok {
+		if _, ok := l.fields[t]; ok {
 			l.addToken(token.NewToken(token.Field, t))
 
 			return nil
@@ -206,7 +185,7 @@ func (l Lexer) peek() (string, int) {
 		return ":", 1
 	}
 
-	for field := range knownFields {
+	for field := range l.fields {
 		to := min(len(l.source), l.i+len(field))
 		t := strings.ToLower(l.source[l.i:to])
 

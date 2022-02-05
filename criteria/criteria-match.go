@@ -14,7 +14,11 @@ type criteriaMatch struct {
 	valFunc ValueTransformer
 }
 
-const FieldFulltext string = "(--fulltext)"
+// FieldFulltext is a special field name used for fulltext search
+const FieldFulltext string = "--(--fulltext--)--"
+
+// FieldDefault is a special field name used to set the default match constructor
+const FieldDefault string = "--(--default--)--"
 
 func NewMatch(field, substr string, valFunc ValueTransformer) *criteriaMatch {
 	return &criteriaMatch{
@@ -41,15 +45,13 @@ func (c criteriaMatch) Matches(v interface{}) bool {
 		}
 	}
 
-	fmt.Println("[", "does not match", "]", c.field, c.substr)
-
 	return false
 }
 
 func (c criteriaMatch) String() string {
 	if c.field == FieldFulltext {
-		return fmt.Sprintf("CONTAINS \"%s\"", c.substr)
+		return fmt.Sprintf("ANYWHERE CONTAINS \"%s\"", c.substr)
 	}
 
-	return fmt.Sprintf("%s == \"%s\"", c.field, c.substr)
+	return fmt.Sprintf("%s CONTAINS \"%s\"", c.field, c.substr)
 }
