@@ -91,3 +91,7 @@ func (l *Lexer) RemoveField(name string) error {
 
 	return nil
 }
+
+func (l *Lexer) RemoveAllFields() {
+	l.fields = make(fieldMap)
+}

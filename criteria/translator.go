@@ -53,6 +53,11 @@ func (t *Translator) SetMatchConstructor(field string, constructor CriteriaMatch
 	t.constructors[field] = constructor
 }
 
+func (t *Translator) RemoveAllConstructors() {
+	t.constructors = make(constructorMap)
+	t.constructors[FieldDefault] = DefaultCriteriaMatchConstructor
+}
+
 func (t *Translator) Reset() {
 	t.i = 0
 	t.tokens = nil

@@ -19,7 +19,8 @@ type Flag int
 const (
 	FlagOptimize Flag = 1 << iota
 
-	FlagErrorOnUnknownField // @todo: implement
+	FlagErrorOnUnknownField   // @todo: implement
+	FlagSupportFulltextSearch // @todo: implement
 
 	FlagDefault = FlagOptimize
 )
@@ -77,4 +78,9 @@ func (p *Parser) RemoveField(name string) error {
 	p.translator.SetMatchConstructor(name, nil)
 
 	return nil
+}
+
+func (p *Parser) RemoveAllFields(name string) {
+	p.lexer.RemoveAllFields()
+	p.translator.RemoveAllConstructors()
 }
